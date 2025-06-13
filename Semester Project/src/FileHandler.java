@@ -20,7 +20,7 @@ public class FileHandler {
         List<String[]> data = new ArrayList<>();
         File file = new File(FILE_NAME);
         if (!file.exists()) return data;
-              try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] fields = line.split(",");
@@ -33,13 +33,18 @@ public class FileHandler {
         }
         return data;
     }
-    public static void rewriteFile(List<Passenger> passengers) {
+
+    public static void rewriteFile(PassengerLinkedList passengerList) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
-            for (Passenger p : passengers) {
-                bw.write(p.bookingID + "," + p.name + "," + p.cnic + "," + p.phone + "," +
-                        p.seatNo + "," + p.busID + "," + getFareFromBusID(p.busID) + "," + p.gender);
-                bw.newLine();
-            }
+            passengerList.forEach(p -> {
+                try {
+                    bw.write(p.bookingID + "," + p.name + "," + p.cnic + "," + p.phone + "," +
+                            p.seatNo + "," + p.busID + "," + getFareFromBusID(p.busID) + "," + p.gender);
+                    bw.newLine();
+                } catch (IOException e) {
+                    System.out.println("Error writing passenger: " + e.getMessage());
+                }
+            });
         } catch (IOException e) {
             System.out.println("Error rewriting file: " + e.getMessage());
         }
@@ -54,5 +59,5 @@ public class FileHandler {
         if (busID.contains("Karachi")) return 4500;
         return 1500;
     }
-
 }
+
